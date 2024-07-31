@@ -91,7 +91,7 @@ namespace CollegeProject.Controllers
 
         
 
-        [HttpGet("users")]
+        [HttpGet("authors")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users
@@ -108,7 +108,7 @@ namespace CollegeProject.Controllers
             return Ok(users);
         }
 
-        [HttpGet("users/{id}")]
+        [HttpGet("authors/{id}")]
 public async Task<IActionResult> GetUser(int id)
 {
     var user = await _context.Users
