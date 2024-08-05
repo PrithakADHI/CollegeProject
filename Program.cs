@@ -58,6 +58,8 @@ app.UseAuthentication();
 app.UseCors("AllowEverything");
 app.UseAuthorization();
 
+app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();

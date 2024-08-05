@@ -25,7 +25,7 @@ namespace CollegeProject.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user)
+        public async Task<IActionResult> Register([FromBody] User user, [FromForm] IFormFile? image)
         {
             if (await _context.Users.AnyAsync(u => u.Username == user.Username))
             {
