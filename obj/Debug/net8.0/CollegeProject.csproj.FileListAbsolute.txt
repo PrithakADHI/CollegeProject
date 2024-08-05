@@ -127,3 +127,8 @@
 /Users/prithakadhikari/Documents/ASP/CollegeProject/obj/Debug/net8.0/CollegeProject.pdb
 /Users/prithakadhikari/Documents/ASP/CollegeProject/obj/Debug/net8.0/CollegeProject.genruntimeconfig.cache
 /Users/prithakadhikari/Documents/ASP/CollegeProject/obj/Debug/net8.0/ref/CollegeProject.dll
+/Users/prithakadhikari/Documents/ASP/CollegeProject/obj/Debug/net8.0/CollegeProject.sourcelink.json
+/Users/prithakadhikari/Documents/ASP/CollegeProject/bin/Debug/net8.0/Newtonsoft.Json.dll
+/Users/prithakadhikari/Documents/ASP/CollegeProject/bin/Debug/net8.0/Microsoft.AspNetCore.JsonPatch.dll
+/Users/prithakadhikari/Documents/ASP/CollegeProject/bin/Debug/net8.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+/Users/prithakadhikari/Documents/ASP/CollegeProject/bin/Debug/net8.0/Newtonsoft.Json.Bson.dll

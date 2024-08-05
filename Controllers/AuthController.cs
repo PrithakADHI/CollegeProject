@@ -39,25 +39,27 @@ namespace CollegeProject.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
-        {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == login.Username && u.Password == login.Password);
+{
+    var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == login.Username && u.Password == login.Password);
 
-            if (user == null)
-            {
-                return Unauthorized("Invalid credentials");
-            }
+    if (user == null)
+    {
+        return Unauthorized("Invalid credentials");
+    }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username)
-            };
+    var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // Use the same claim type here
+    };
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            return Ok(new { message = "Successfully logged in" });
-        }
+    return Ok(new { message = "Successfully logged in" });
+}
+
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
@@ -101,10 +103,12 @@ namespace CollegeProject.Controllers
                     u.Username, 
                     u.AuthorName, 
                     u.Description, 
-                    u.Contact 
+                    u.totalPosts,
+                    u.category,
+                    u.contacts
                 })
                 .ToListAsync();
-
+  
             return Ok(users);
         }
 
@@ -112,24 +116,37 @@ namespace CollegeProject.Controllers
 public async Task<IActionResult> GetUser(int id)
 {
     var user = await _context.Users
+        .Include(u => u.Posts)
         .Where(u => u.Id == id)
-        .Select(u => new 
-        { 
-            u.Id, 
-            u.Username, 
-            u.AuthorName, 
-            u.Description, 
-            u.Contact 
+        .Select(u => new
+        {
+            u.Id,
+            u.Username,
+            u.AuthorName,
+            u.Description,
+            u.totalPosts,
+            u.category,
+            u.contacts,
+            Posts = u.Posts.Select(p => new
+            {
+                p.Id,
+                p.PostType,
+                p.Content,
+                p.PostTitle,
+                p.Date
+            })
         })
         .FirstOrDefaultAsync();
 
     if (user == null)
     {
-        return NotFound(); // Returns a 404 status if the user is not found
+        return NotFound();
     }
 
-    return Ok(user); // Returns the user details with a 200 status
+    return Ok(user);
 }
+
+
 
     }
 
