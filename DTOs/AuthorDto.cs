@@ -53,6 +53,8 @@ public class UpdateUserDto
     public string? contacts {get; set;}
 
     public string? Username {get; set;}
+
+    public int? totalPosts {get; set;}
 }
 
 

@@ -12,6 +12,7 @@ namespace CollegeProject.Models
 
         public string? contacts { get; set; }
 
+        public int? ImageNo { get; set; }
         public string? ImageUrl { get; set; }
 
         public ICollection<Post>? Posts { get; set; }

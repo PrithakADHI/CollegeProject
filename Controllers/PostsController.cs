@@ -153,7 +153,7 @@ public async Task<IActionResult> UpdatePost(int id, [FromBody] UpdatePostDto upd
     _context.Posts.Update(post);
     await _context.SaveChangesAsync();
 
-    return Ok(post);
+    return Ok(new { message = "Post updated successfully." });
 }
 
 
@@ -169,7 +169,7 @@ public async Task<IActionResult> UpdatePost(int id, [FromBody] UpdatePostDto upd
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new { message = "Post deleted successfully." });
         }
     }
 }

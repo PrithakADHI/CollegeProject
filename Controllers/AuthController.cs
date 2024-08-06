@@ -25,17 +25,52 @@ namespace CollegeProject.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user, [FromForm] IFormFile? image)
-        {
-            if (await _context.Users.AnyAsync(u => u.Username == user.Username))
-            {
-                return BadRequest("Username already exists");
-            }
+public async Task<IActionResult> Register([FromBody] User user)
+{
+    if (await _context.Users.AnyAsync(u => u.Username == user.Username))
+    {
+        return BadRequest("Username already exists");
+    }
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Successfully registered" });
+    // Handle image assignment
+    var imageUrls = new List<string>
+    {
+        "random-link-not-to-be-used.com",
+        "https://images.pexels.com/photos/12889460/pexels-photo-12889460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/7811599/pexels-photo-7811599.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/11640148/pexels-photo-11640148.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/1933873/pexels-photo-1933873.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        // Add more image URLs here
+    };
+
+    if (user.ImageNo != 0)
+    {
+        int imageNo = 1;
+        if (user.ImageNo != null) {
+            imageNo = (int) user.ImageNo;
         }
+        user.ImageUrl = imageUrls[imageNo % imageUrls.Count]; // Get the corresponding URL
+    }
+    else
+    {
+        // No image chosen
+        var random = new Random();
+        var randomImageNo = random.Next(imageUrls.Count);
+        user.ImageNo = randomImageNo;
+        user.ImageUrl = imageUrls[randomImageNo];
+    }
+
+    _context.Users.Add(user);
+    await _context.SaveChangesAsync();
+    return Ok(new { message = "Successfully registered" });
+}
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
@@ -105,7 +140,9 @@ namespace CollegeProject.Controllers
                     u.Description, 
                     u.totalPosts,
                     u.category,
-                    u.contacts
+                    u.contacts,
+                    u.ImageNo,
+                    u.ImageUrl
                 })
                 .ToListAsync();
   
@@ -127,6 +164,8 @@ public async Task<IActionResult> GetUser(int id)
             u.totalPosts,
             u.category,
             u.contacts,
+            u.ImageNo,
+            u.ImageUrl,
             Posts = u.Posts.Select(p => new
             {
                 p.Id,
@@ -146,6 +185,57 @@ public async Task<IActionResult> GetUser(int id)
     return Ok(user);
 }
 
+
+[HttpPut("authors/{id}")]
+public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto updateDto)
+{
+    if (updateDto == null)
+    {
+        return BadRequest("Invalid update data.");
+    }
+
+    var user = await _context.Users.FindAsync(id);
+    if (user == null)
+    {
+        return NotFound();
+    }
+
+    // Update the user entity with the values from the DTO
+    if (updateDto.totalPosts.HasValue)
+    {
+        user.totalPosts = updateDto.totalPosts.Value;
+    }
+    if (!string.IsNullOrEmpty(updateDto.Username))
+    {
+        user.Username = updateDto.Username;
+    }
+    if (!string.IsNullOrEmpty(updateDto.AuthorName))
+    {
+        user.AuthorName = updateDto.AuthorName;
+    }
+    if (!string.IsNullOrEmpty(updateDto.Description))
+    {
+        user.Description = updateDto.Description;
+    }
+    if (!string.IsNullOrEmpty(updateDto.category))
+    {
+        user.category = updateDto.category;
+    }
+    if (!string.IsNullOrEmpty(updateDto.contacts))
+    {
+        user.contacts = updateDto.contacts;
+    }
+
+    // Validate the updated user entity
+    if (!TryValidateModel(user))
+    {
+        return ValidationProblem(ModelState);
+    }
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Author updated successfully." });
+}
 
 
     }
