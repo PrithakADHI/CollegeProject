@@ -1,12 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using CollegeProject.Data;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
@@ -32,17 +30,16 @@ builder.Services.AddDistributedMemoryCache();
 // Configure CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowEverything",
+    options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.AllowAnyOrigin()
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
+            builder
+                .WithOrigins("http://localhost:5173") // Your frontend origin
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials(); // Allow credentials (cookies)
         });
 });
-
-
-
 
 var app = builder.Build();
 
@@ -55,7 +52,7 @@ app.UseHttpsRedirection();
 
 app.UseSession();
 app.UseAuthentication();
-app.UseCors("AllowEverything");
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthorization();
 
 app.UseStaticFiles();
