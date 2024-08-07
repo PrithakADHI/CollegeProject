@@ -104,14 +104,18 @@ public async Task<IActionResult> Register([FromBody] User user)
         }
 
         [HttpGet("user")]
-        public IActionResult GetUser()
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return Ok(new { username = User.Identity.Name });
-            }
-            return Unauthorized();
-        }
+public IActionResult GetUser()
+{
+    if (User.Identity.IsAuthenticated)
+    {
+        var Id = User.FindFirstValue(ClaimTypes.NameIdentifier); // Extract the user ID from claims
+        var username = User.Identity.Name;
+        
+        return Ok(new { Id, username });
+    }
+    return Unauthorized();
+}
+
 
     }
 
